@@ -91,7 +91,7 @@
   (list 'handler e-type var-list handler-form))
 
 (defmacro handler (e-type var-list &rest body)
-  `(abl-handler ,e-type (list ,@var-list) body))
+  `(abl-handler ,e-type (list ,@var-list) ,body))
 
 (defun abl-handler-block (form &rest handler-list)
   (list 'with-handlers form
