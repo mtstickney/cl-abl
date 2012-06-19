@@ -95,4 +95,6 @@
 
 (defun abl-handler-block (form &rest handler-list)
   (list 'with-handlers form
-        (map 'list #'abl-handler handler-list)))
+        (map 'list (lambda (h)
+                     (eval `(handler ,@h)))
+             handler-list)))
