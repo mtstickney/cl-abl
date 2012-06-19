@@ -15,8 +15,21 @@
 
 (defun ast-element (node)
   (car node))
-(defun indentation-string ()
-  (make-sequence 'string (* *INDENT-LEVEL* *INDENT-SIZE*) :initial-element #\Space))
+
+(defun indent (line &optional (n 1))
+  (reverse (cons line
+                 (loop for i from 1 to *INDENT-LEVEL* collecting
+                       (make-sequence 'string *INDENT-SIZE* :initial-element #\Space)))))
+
+(defun with-indent (n &rest rest)
+  (let ((lines '()))
+    (incf *INDENT-LEVEL* n)
+    (setq lines  (map 'list (lambda (line)
+                              (indent line n))
+                      rest))
+    (decf *INDENT-LEVEL* n)
+    lines))
+
 (defun seq (&rest r)
   "Join a sequence of statement results together."
   (cons 'seq r))
