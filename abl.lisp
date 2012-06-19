@@ -55,10 +55,25 @@
 
 (defun abl-parm (direction type name &key (undo nil))
   (list 'parm direction type name undo))
+
+;; (defun abl-parm (direction type name &key (undo nil))
+;;   (list (indent (format nil "DEFINE ~a PARAMETER ~a AS ~a~a."
+;;                         direction
+;;                         name
+;;                         type
+;;                         (if undo ""
+;;                           " NO-UNDO")))))
+
 (defun parms (&rest r)
   (seq
    (map 'list (lambda (pdecl)
                 (funcall #'abl-parm pdecl)))))
+
+;; (defmacro parms (&body body)
+;;   (cons 'seq
+;;         (loop for pdecl in body collecting
+;;               (cons 'abl-parm pdecl))))
+
 (defun abl-procedure (name parm-list var-list &rest r)
   (list 'proc name (funcall #'parms parm-list)
          (funcall #'vars var-list)
