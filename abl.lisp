@@ -46,7 +46,7 @@
 
 (defun vars (&rest r)
   (seq (map 'list (lambda (vdecl)
-                    (funcall #'abl-var vdecl)))))
+                    (apply #'abl-var vdecl))
             r)))
 
 ;; (defmacro vars (&body body)
@@ -68,7 +68,7 @@
 (defun parms (&rest r)
   (seq
    (map 'list (lambda (pdecl)
-                (funcall #'abl-parm pdecl)))))
+                (apply #'abl-parm pdecl))
         r)))
 
 ;; (defmacro parms (&body body)
@@ -77,15 +77,15 @@
 ;;               (cons 'abl-parm pdecl))))
 
 (defun abl-procedure (name parm-list var-list &rest r)
-  (list 'proc name (funcall #'parms parm-list)
-         (funcall #'vars var-list)
+  (list 'proc name (apply #'parms parm-list)
+         (apply #'vars var-list)
          r))
 
 (defun abl-assign (&rest r)
   (cons 'assign r))
 
 (defun abl-call (name parm-list)
-  (list 'call name (funcall #'parms parm-list)))
+  (list 'call name (apply #'parms parm-list)))
 
 (defun abl-handler (e-type var-list handler-form)
   (list 'handler e-type var-list handler-for
