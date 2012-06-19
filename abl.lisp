@@ -47,24 +47,11 @@
 (defun vars (&rest r)
   (seq (map 'list (lambda (vdecl)
                     (funcall #'abl-var vdecl)))))
-(defmacro with-indent (n &body body)
-  `(progn
-     (incf *INDENT-LEVEL* ,n)
-     ,@body
-     (decf *INDENT-LEVEL* ,n)))
 
-(defun abl-var (type name &key (undo nil))
-  (print-with-indent t "DEFINE VARIABLE ~a AS ~a~a.~%"
-                     (force name)
-                     (force type)
-                     (if undo ""
-                       " NO-UNDO")))
-
-(defmacro vars (&body body)
-  `(progn
-     ,@(map 'list (lambda (v)
-                    `(abl-var (delay ,(first v)) ,(delay  (second v))))
-            body)))
+;; (defmacro vars (&body body)
+;;   (cons 'seq
+;;         (loop for vdecl in body collecting
+;;               (cons 'abl-var vdecl))))
 
 (defun abl-parm (direction type name &key (undo nil))
   (list 'parm direction type name undo))
