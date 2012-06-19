@@ -47,6 +47,7 @@
 (defun vars (&rest r)
   (seq (map 'list (lambda (vdecl)
                     (funcall #'abl-var vdecl)))))
+            r)))
 
 ;; (defmacro vars (&body body)
 ;;   (cons 'seq
@@ -68,6 +69,7 @@
   (seq
    (map 'list (lambda (pdecl)
                 (funcall #'abl-parm pdecl)))))
+        r)))
 
 ;; (defmacro parms (&body body)
 ;;   (cons 'seq
