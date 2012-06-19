@@ -37,10 +37,12 @@
 (defun abl-var (type name &key (undo nil))
   (list 'var type name undo))
 
-(defun print-with-indent (destination format-string &rest r)
-  (format destination "~a~a"
-          (indentation-string)
-          (apply #'format `(nil ,format-string ,@r))))
+;; (defun
+;;   (list  (indent (format nil "DEFINE VARIABLE ~a AS ~a~a."
+;;                          name
+;;                          type
+;;                          (if undo ""
+;;                            " NO-UNDO")))))
 
 (defun vars (&rest r)
   (seq (map 'list (lambda (vdecl)
