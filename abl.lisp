@@ -88,8 +88,7 @@
   (list 'call name (apply #'parms parm-list)))
 
 (defun abl-handler (e-type var-list handler-form)
-  (list 'handler e-type var-list handler-for
-m))
+  (list 'handler e-type var-list handler-form))
 
 (defmacro handler (e-type var-list &rest body)
   `(abl-handler ,e-type (list ,@var-list) body))
