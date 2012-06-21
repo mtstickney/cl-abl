@@ -31,8 +31,28 @@
   "Join a sequence of statement results together."
   (cons 'seq r))
 
+(defun seqp (thing)
+  (and (listp thing)
+       (eq (car thing) 'seq)
+       (listp (second thing))))
+
+(defun seq-items (seq)
+  (second seq))
+
 (defun var (type name &key (undo nil))
   (list 'var type name undo))
+
+(defun varp (thing)
+  (and (listp thing)
+       (eq (length thing) 4)
+       (eq (car thing) 'var)))
+
+(defun var-name (v)
+  (third v))
+(defun var-type (v)
+  (second v))
+(defun var-undo (v)
+  (fourth v))
 
 ;; (defun
 ;;   (list  (indent (format nil "DEFINE VARIABLE ~a AS ~a~a."
@@ -48,6 +68,20 @@
 
 (defun parm (direction type name &key (undo nil))
   (list 'parm direction type name undo))
+
+(defun parmp (thing)
+  (and (listp thing)
+       (eq (length thing) 4)
+       (eq (car thing) 'parm)))
+
+(defun parm-direction (p)
+  (second p))
+(defun parm-type (p)
+  (third p))
+(defun parm-name (p)
+  (fourth p))
+(defun parm-undo (p)
+  (fifth p))
 
 ;; (defun abl-parm (direction type name &key (undo nil))
 ;;   (list (indent (format nil "DEFINE ~a PARAMETER ~a AS ~a~a."
@@ -75,17 +109,48 @@
 (defun procedure (name parm-list var-list &rest r)
   (list 'proc name parm-list var-list r))
 
+(defun procedurep (thing)
+  (and (listp thing)
+       (eq (length thing) 5)
+       (eq (car thing) 'proc)
+       (and (seqp (procedure-parms thing))
+            (every #'parmp (seq-items parm-list)))
+       (and (seqp (procedure-vars thing))
+            (every #'varp (seq-items var-list)))))
+
+(defun procedure-name (p)
+  (second p))
+(defun procedure-parms (p)
+  (third p))
+(defun procedure-vars (p)
+  (fourth p))
+(defun procedure-body (p)
+  (fifth p))
+
 (defun assignment (assignment-list)
   (cons 'assignment assignment-list))
-  (list 'handler e-type var-list handler-form))
 
-(defmacro handler (e-type var-list &rest body)
-  `(abl-handler ,e-type (list ,@var-list) ,body))
+(defun assignmentp (a)
+  (and (listp a)
+       (eq (car a) 'assign)
+       (listp (cadr a))))
+
 (defmacro assign (&rest rest)
   `(assignment (list . ,rest)))
 
 (defun call (name parm-list)
   (list 'call name parm-list))
+
+(defun callp (thing)
+  (and (listp thing)
+       (eq (length thing) 3)
+       (eq (car thing) 'call)))
+
+(defun call-name (c)
+  (second c))
+(defun call-parm-list (c)
+  (third c))
+
 (defun abl-handler-block (form &rest handler-list)
   (list 'with-handlers form
         (map 'list (lambda (h)
@@ -93,3 +158,15 @@
              handler-list)))
 (defun handler (e-type var-list handler-form)
   (list 'handler e-type var-list handler-form))
+
+(defun handlerp (thing)
+  (and (listp thing)
+       (eq (length thing) 4)
+       (eq (car thing) 'handler)))
+
+(defun handler-type (h)
+  (second h))
+(defun handler-var-list (h)
+  (third h))
+(defun handler-form (h)
+  (fourth h))
