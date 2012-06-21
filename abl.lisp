@@ -13,9 +13,6 @@
 (defmacro delay (expr) `(lambda () ,expr))
 (defun force (thunk) (funcall thunk))
 
-(defun ast-element (node)
-  (car node))
-
 (defun indent (line &optional (n 1))
   (reverse (cons line
                  (loop for i from 1 to *INDENT-LEVEL* collecting
