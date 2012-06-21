@@ -165,3 +165,6 @@
   (third h))
 (defun handler-form (h)
   (fourth h))
+(defun abl-alias (name value)
+  (list 'alias name value))
+
