@@ -178,3 +178,8 @@
 (defun abl-alias (name value)
   (list 'alias name value))
 
+(defun abl-scoped-alias (alias-list body-form)
+  (let ((aliases (loop for a in alias-list collecting
+                           (apply #'abl-alias a))))
+    (list 'with-aliases aliases body-form)))
+
