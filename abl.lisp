@@ -151,11 +151,6 @@
 (defun call-parm-list (c)
   (third c))
 
-(defun abl-handler-block (form &rest handler-list)
-  (list 'with-handlers form
-        (map 'list (lambda (h)
-                     (eval `(handler ,@h)))
-             handler-list)))
 (defun handler (e-type var-list handler-form)
   (list 'handler e-type var-list handler-form))
 
