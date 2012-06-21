@@ -165,6 +165,16 @@
   (third h))
 (defun handler-form (h)
   (fourth h))
+
+(defun abl-scoped-handlers (form handler-list)
+  (list 'with-handlers form handler-list))
+
+(defmacro with-handlers (form &rest handler-list)
+  (let ((handler-forms (map 'list (lambda (h)
+                                    `(handler ,@h))
+                            handler-list)))
+    `(abl-scoped-handlers ,form ,(cons 'list handler-forms))))
+
 (defun abl-alias (name value)
   (list 'alias name value))
 
