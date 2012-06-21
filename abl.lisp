@@ -31,7 +31,7 @@
   "Join a sequence of statement results together."
   (cons 'seq r))
 
-(defun abl-var (type name &key (undo nil))
+(defun var (type name &key (undo nil))
   (list 'var type name undo))
 
 ;; (defun
@@ -41,17 +41,12 @@
 ;;                          (if undo ""
 ;;                            " NO-UNDO")))))
 
-(defun vars (&rest r)
-  (seq (map 'list (lambda (vdecl)
-                    (apply #'abl-var vdecl))
-            r)))
-
 ;; (defmacro vars (&body body)
 ;;   (cons 'seq
 ;;         (loop for vdecl in body collecting
 ;;               (cons 'abl-var vdecl))))
 
-(defun abl-parm (direction type name &key (undo nil))
+(defun parm (direction type name &key (undo nil))
   (list 'parm direction type name undo))
 
 ;; (defun abl-parm (direction type name &key (undo nil))
@@ -61,37 +56,40 @@
 ;;                         type
 ;;                         (if undo ""
 ;;                           " NO-UNDO")))))
+(defmacro defdecls (name func)
+  `(defmacro ,name (&rest r)
+     (let ((decl-list (map 'list (lambda (decl)
+                                   `(,',func ,@decl))
+                           r)))
+       `(seq ,@decl-list))))
 
-(defun parms (&rest r)
-  (seq
-   (map 'list (lambda (pdecl)
-                (apply #'abl-parm pdecl))
-        r)))
+;; var- and parm-list macros
+(defdecls vars var)
+(defdecls parms parm)
 
 ;; (defmacro parms (&body body)
 ;;   (cons 'seq
 ;;         (loop for pdecl in body collecting
 ;;               (cons 'abl-parm pdecl))))
 
-(defun abl-procedure (name parm-list var-list &rest r)
-  (list 'proc name (apply #'parms parm-list)
-         (apply #'vars var-list)
-         r))
+(defun procedure (name parm-list var-list &rest r)
+  (list 'proc name parm-list var-list r))
 
-(defun abl-assign (&rest r)
-  (cons 'assign r))
-
-(defun abl-call (name parm-list)
-  (list 'call name (apply #'parms parm-list)))
-
-(defun abl-handler (e-type var-list handler-form)
+(defun assignment (assignment-list)
+  (cons 'assignment assignment-list))
   (list 'handler e-type var-list handler-form))
 
 (defmacro handler (e-type var-list &rest body)
   `(abl-handler ,e-type (list ,@var-list) ,body))
+(defmacro assign (&rest rest)
+  `(assignment (list . ,rest)))
 
+(defun call (name parm-list)
+  (list 'call name parm-list))
 (defun abl-handler-block (form &rest handler-list)
   (list 'with-handlers form
         (map 'list (lambda (h)
                      (eval `(handler ,@h)))
              handler-list)))
+(defun handler (e-type var-list handler-form)
+  (list 'handler e-type var-list handler-form))
